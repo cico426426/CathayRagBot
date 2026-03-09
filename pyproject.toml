@@ -12,4 +12,7 @@ dependencies = [
     "llama-index-llms-openai>=0.6.26",
     "llama-index-readers-docling>=0.4.2",
     "python-dotenv>=1.2.2",
+    "trulens-apps-llamaindex>=2.7.0",
+    "trulens-eval>=2.7.0",
+    "trulens-providers-openai>=2.7.0",
 ]

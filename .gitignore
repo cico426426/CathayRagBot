@@ -43,3 +43,6 @@ db/
 
 # UV
 .uv
+
+#SQLite
+*.sqlite
