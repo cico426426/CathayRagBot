@@ -6,12 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# 2. 測試一下是否真的有讀到 (選配，正式跑成功後可刪除)
-if not os.getenv("OPENAI_API_KEY"):
-    print("❌ 錯誤：找不到 OPENAI_API_KEY，請檢查 .env 檔案內容與路徑")
-else:
-    print("✅ 成功讀取 OPENAI_API_KEY")
-
 # 設定存儲路徑
 STORAGE_DIR = "./storage"
 

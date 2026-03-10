@@ -6,7 +6,7 @@ from llama_index.core.postprocessor import LLMRerank
 qa_prompt = PromptTemplate(qa_prompt_tmpl)
 
 def get_chat_engine(index):
-# 使用 LLM 進行重排
+    # 使用 LLM 進行重排
     rerank_postprocessor = LLMRerank(
         choice_batch_size=5, 
         top_n=3
@@ -18,7 +18,7 @@ def get_chat_engine(index):
     )
     
 
-    # 3. 更新 Prompt
+    # 更新 Prompt
     qa_prompt = PromptTemplate(qa_prompt_tmpl)    
     query_engine.update_prompts({
         "response_synthesizer:text_qa_template": qa_prompt

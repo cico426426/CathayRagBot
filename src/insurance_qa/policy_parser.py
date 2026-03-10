@@ -74,7 +74,7 @@ if __name__ == "__main__":
             "text_preview": node.text[:200]  # 只看前 200 字確認切分點
         })
     
-    # 存成 debug_nodes.json 方便你用 VS Code 打開看
+    # 存成 debug_nodes.json 
     with open("debug_nodes.json", "w", encoding="utf-8") as f:
         json.dump(debug_data, f, ensure_ascii=False, indent=2)
         
