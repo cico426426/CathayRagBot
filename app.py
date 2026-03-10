@@ -32,7 +32,7 @@ def launch_gradio():
     demo = gr.ChatInterface(
         fn=predict,
         title="🛡️ 國泰產險智能 Agent 助理",
-        description="我是您的全能保險助理。我可以幫您【分析複雜條款】並同時進行【理賠金額計算】。",
+        description="我是您的全能保險助理。",
         examples=[
             "班機延誤理賠是多少？我有3個人延誤，總共領多少？",
             "行李遺失後應該如何申請理賠？",
