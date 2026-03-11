@@ -23,8 +23,35 @@ def launch_gradio():
             # 調用 Agent 執行任務，傳入持久化的 agent_ctx 以維持記憶
             response = await agent.run(message, ctx=agent_ctx)
             
-            # 返回 Agent 生成的專業回答
-            return str(response)
+            # 解析 Agent 生成的專業回答
+            final_answer = str(response)
+            
+            # 從工具執行紀錄中抽取原始來源，讓前端直接渲染，完全不經過 Agent 處理
+            sources_list = []
+            tool_calls = getattr(response, 'tool_calls', []) or []
+            
+            for tc in tool_calls:
+                # 提早過濾不相關的工具
+                if getattr(tc, 'tool_name', '') != 'search_documents':
+                    continue
+                
+                # 安全地獲取工具的原始回傳字串
+                raw_out = getattr(getattr(tc, 'tool_output', None), 'raw_output', '')
+                
+                # 確保來源標記存在
+                if "===SOURCES_START===" not in raw_out:
+                    continue
+                    
+                # 擷取並去除頭尾空白
+                extracted = raw_out.split("===SOURCES_START===")[1].split("===SOURCES_END===")[0].strip()
+                if extracted:
+                    sources_list.append(extracted)
+            
+            if sources_list:
+                sources_str = "\n".join(sources_list)
+                final_answer += f"\n\n---\n### 🔍 參考證據 (原始條文)\n{sources_str}"
+                
+            return final_answer
         except Exception as e:
             return f"⚠️ 抱歉，處理您的請求時發生錯誤：{str(e)}"
 
