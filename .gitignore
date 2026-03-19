@@ -45,6 +45,7 @@ db/
 .uv
 
 #SQLite
-*.sqlitestorage/
+*.sqlite
+storage/
 debug_nodes.json
 test_regex.py
