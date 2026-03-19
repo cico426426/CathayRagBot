@@ -18,7 +18,9 @@ def save_or_load_index(nodes: List[TextNode] = None):
     else:
         # 如果沒有，則根據傳入的 nodes 建立新索引
         if nodes is None:
-            raise ValueError("找不到既有索引，必須提供 nodes 來建立新索引！")
+            print("⚠️ 找不到既有索引，自動從 PDF 解析建立新索引...")
+            from src.insurance_qa.policy_parser import extract_nodes_from_pdf
+            nodes = extract_nodes_from_pdf("data/海外旅行不便險條款-2.pdf")
             
         print("⚡ 正在建立新索引並計算向量（Embedding）...")
         index = VectorStoreIndex(nodes)

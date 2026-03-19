@@ -1,18 +1,33 @@
-from llama_index.core import StorageContext, load_index_from_storage
+from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
 from src.insurance_qa.chat_engine import get_chat_engine
+from src.insurance_qa.policy_index import save_or_load_index
 
-async def search_documents(query: str) -> str:
+async def search_documents(query: str, rule_type: str = None) -> str:
     """
     當客戶詢問關於保險條款、承保範圍、不保事項、理賠流程、或費率表時，請調用此工具。
     此工具會根據最新的保險契約 PDF 提供精準的分析。
+
+    參數：
+    - query: 使用者的查詢字串。
+    - rule_type: 可選，若查詢涉及特定主題，請傳入對應標籤以加速檢索。
+        - '不保事項': 詢問不可理賠、除外責任、拒賠情況。
+        - '承保範圍': 詢問理賠項目、賠什麼、賠多少。
+        - '理賠文件': 詢問理賠應備文件、證明單據。
+        - '用詞定義': 詢問條約中的專有名詞解釋。
     """
-    # 注意：這裡需要先取得 index。
-    # 建議在啟動時就初始化 index，避免每次 search 都重新讀取磁碟
     try:
-        storage_context = StorageContext.from_defaults(persist_dir="./storage")
-        index = load_index_from_storage(storage_context)
+        # 使用封裝好的函數來取得或建立 index
+        index = save_or_load_index()
+        
+        # 根據 Agent 的指示動態建立過濾器
+        filters = None
+        if rule_type:
+            filters = MetadataFilters(
+                filters=[ExactMatchFilter(key="rule_type", value=rule_type)]
+            )
+
         # 獲取我們精心調教過的 Rerank Query Engine
-        engine = get_chat_engine(index)
+        engine = get_chat_engine(index, filters=filters)
         
         # 使用 aquery 進行非同步查詢
         response = await engine.aquery(query)
@@ -39,3 +54,4 @@ async def search_documents(query: str) -> str:
         return f"{final_text}\n\n{sources_text}"
     except Exception as e:
         return f"檢索條款時發生錯誤: {str(e)}"
+
