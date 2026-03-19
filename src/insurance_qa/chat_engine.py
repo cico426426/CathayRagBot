@@ -5,7 +5,7 @@ from llama_index.core.postprocessor import LLMRerank
 
 qa_prompt = PromptTemplate(qa_prompt_tmpl)
 
-def get_chat_engine(index):
+def get_chat_engine(index, filters=None):
     # 使用 LLM 進行重排
     rerank_postprocessor = LLMRerank(
         choice_batch_size=5, 
@@ -15,6 +15,7 @@ def get_chat_engine(index):
     query_engine = index.as_query_engine(
         similarity_top_k=10,
         node_postprocessors=[rerank_postprocessor],
+        filters=filters,
     )
     
 

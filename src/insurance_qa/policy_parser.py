@@ -30,25 +30,47 @@ def extract_nodes_from_pdf(file_path: str) -> List[TextNode]:
         if chapter_match:
             current_chapter = chapter_match.group(0).replace('#', '').replace('*', '').strip()
 
-        # 提取條文標題
-        article_match = re.search(r'第([一二三四五六七八九十百]+)條', text_content)
+        # 提取條文標題與條文名稱
+        article_match = re.search(r'(第[一二三四五六七八九十百]+條)\s*([^\n\r]*)', text_content)
         
         # 提取附表標題
         table_match = re.search(r'附表\s*([^\n\r]*)', text_content)
         
+        article_title = ""
+        rule_type = "一般條款"
+        
         if article_match:
-            article_label = article_match.group(0)
+            article_label = article_match.group(1).strip()
+            article_title = article_match.group(2).strip()
+            
+            # 依據標題推論條文類型 (rule_type)
+            if "不保" in article_title or "除外" in article_title:
+                rule_type = "不保事項"
+            elif "承保範圍" in article_title:
+                rule_type = "承保範圍"
+            elif "理賠文件" in article_title:
+                rule_type = "理賠文件"
+            elif "定義" in article_title:
+                rule_type = "用詞定義"
+            else:
+                rule_type = "一般條款"
+                
         elif table_match:
             article_label = table_match.group(0).replace('#', '').strip()
             current_chapter = "附件/費率表" # 附表通常不屬於最後一個章節
+            rule_type = "附表"
+            article_title = article_label
         else:
             article_label = "前言/其他"
+            rule_type = "其他"
 
         node = TextNode(
             text=text_content,
             metadata={
                 "chapter": current_chapter,
                 "article": article_label,
+                "article_title": article_title,
+                "rule_type": rule_type,
                 "file_name": file_path.split("/")[-1]
             }
         )
