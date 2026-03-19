@@ -12,6 +12,11 @@ def launch_gradio():
     """
     啟動 Gradio 介面，並將其連接至 Insurance Agent。
     """
+    # 1. 確保索引已經建立
+    print("🔍 檢查並初始化向量資料庫...")
+    from src.insurance_qa.policy_index import save_or_load_index
+    save_or_load_index()
+
     # 2. 定義 Gradio 的非同步預測函數
     async def predict(message, history):
         """
